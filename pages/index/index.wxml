@@ -1,0 +1,107 @@
+<view class="wrap">
+  <view class="header">
+    <view class="title">QDII 区间收益率计算器</view>
+    <view class="sub">数据来源：{{srcName}}（总回报指数 TRI）· 共 {{cnt}} 个产品代码（{{cntnav}} 条 TRI 序列）</view>
+  </view>
+
+  <view class="card">
+    <!-- 产品搜索 -->
+    <view class="field">
+      <view class="label">产品代码 / 产品名称<text class="hint">{{prange}}</text></view>
+      <view class="combo">
+        <input class="combo-input" placeholder="输入代码或名称，支持模糊搜索" value="{{codeText}}"
+               bindinput="onSearchInput" bindfocus="onFocus" bindblur="onBlur" />
+        <view class="combo-list" wx:if="{{showList}}">
+          <block wx:if="{{hits.length}}">
+            <view wx:for="{{hits}}" wx:key="code" class="combo-item" data-index="{{index}}" bindtap="onPick">
+              <view class="cid">{{item.code}}</view>
+              <view class="cname">{{item.name}}</view>
+            </view>
+          </block>
+          <view wx:else class="combo-empty">未找到匹配的产品</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 起止日期 -->
+    <view class="row">
+      <view class="field">
+        <view class="label">起始日期</view>
+        <picker mode="date" value="{{startDate}}" start="{{dateMin}}" end="{{dateMax}}" bindchange="onStartChange">
+          <view class="picker">{{startDate || '请选择'}}</view>
+        </picker>
+      </view>
+      <view class="field">
+        <view class="label">截止日期<text class="hint">默认末数据日</text></view>
+        <picker mode="date" value="{{endDate}}" start="{{dateMin}}" end="{{dateMax}}" bindchange="onEndChange">
+          <view class="picker">{{endDate || '请选择'}}</view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 快捷区间 -->
+    <view class="field">
+      <view class="label">快捷区间<text class="hint">以产品末数据日为基准</text></view>
+      <view class="chips">
+        <view wx:for="{{chips}}" wx:key="key"
+              class="chip {{activeChip === item.key ? 'active' : ''}}"
+              data-key="{{item.key}}" bindtap="onChip">{{item.label}}</view>
+      </view>
+    </view>
+
+    <!-- 年化设置 -->
+    <view class="field">
+      <view class="label">年化设置<text class="hint">年化 = (1+区间收益)^(基准÷天数) − 1</text></view>
+      <view class="ann-row">
+        <label class="ann-check"><switch checked="{{annOn}}" bindchange="onAnnToggle" color="#1f6feb" /> 显示年化</label>
+        <picker class="ann-base" mode="selector" range="{{annBases}}" range-key="label" value="{{annBaseIdx}}" bindchange="onAnnBase">
+          <view class="picker">{{annBases[annBaseIdx].label}}</view>
+        </picker>
+      </view>
+    </view>
+
+    <button class="calc-btn" bindtap="calc">计算区间收益率</button>
+    <view class="err" wx:if="{{error}}">{{error}}</view>
+
+    <!-- 结果 -->
+    <view class="result" wx:if="{{result.show}}">
+      <view class="res-head">{{result.name}}（{{result.code}}）</view>
+      <view class="res-main">
+        <text class="rate {{result.rateClass}}">{{result.rate}}</text>
+        <text class="ann" wx:if="{{result.ann}}">{{result.ann}}</text>
+      </view>
+      <view class="table">
+        <view class="tr"><text class="th">区间天数</text><text class="td num">{{result.days}} 天</text></view>
+        <view class="tr"><text class="th">起始实际取用日期</text><text class="td num">{{result.sd}}</text></view>
+        <view class="tr"><text class="th">起始TRI</text><text class="td num">{{result.sv}}</text></view>
+        <view class="tr"><text class="th">截止实际取用日期</text><text class="td num">{{result.ed}}</text></view>
+        <view class="tr"><text class="th">截止TRI</text><text class="td num">{{result.ev}}</text></view>
+      </view>
+      <view class="note" wx:if="{{result.note}}">{{result.note}}</view>
+    </view>
+  </view>
+
+  <!-- 说明 -->
+  <view class="card notes">
+    <view class="notes-h">关于总回报指数（TRI）</view>
+    <view class="notes-p">总回报指数（Total Return Index，TRI）是一种反映投资标的在持有期间综合回报表现的指数口径，在计算收益时通常考虑分红及其再投资因素，因此更适合用于分析一段时期内的整体回报表现。</view>
+    <view class="notes-h">温馨提示</view>
+    <view class="tips">
+      <view class="tip">
+        <text class="tip-title">TRI口径不等于净值涨跌幅</text>
+        <text class="tip-body">本工具采用TRI数据计算区间收益率，测算结果用于历史业绩分析和比较，不等同于基金单位净值涨跌幅，也不代表投资者实际获得的投资收益。</text>
+      </view>
+      <view class="tip">
+        <text class="tip-title">结果仅供参考，可能存在差异</text>
+        <text class="tip-body">本工具测算结果仅供历史数据分析参考，不构成投资建议。所选日期如无基金净值，系统将自动采用此前最近一个交易日的数据。由于数据口径、分红、费用及汇率等因素，测算结果可能与实际投资收益存在差异。</text>
+      </view>
+      <view class="tip">
+        <text class="tip-title">历史业绩不代表未来表现</text>
+        <text class="tip-body">QDII产品涉及境外市场投资，可能面临市场、汇率、流动性等风险，请根据自身风险承受能力审慎决策。</text>
+      </view>
+    </view>
+    <view class="slogan">理性看待历史收益，关注长期投资价值。</view>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">数据加载中…</view>
+</view>

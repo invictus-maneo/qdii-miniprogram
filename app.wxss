@@ -1,0 +1,9 @@
+/* 全局基础样式 */
+page {
+  background: #f5f7fa;
+  color: #1f2933;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.6;
+  font-size: 28rpx;
+}
+view, text, input, picker, button { box-sizing: border-box; }

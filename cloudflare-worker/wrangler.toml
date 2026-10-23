@@ -1,0 +1,13 @@
+name = "qdii-proxy"
+main = "qdii-proxy.js"
+compatibility_date = "2024-01-01"
+
+# 绑定自有域名（二选一）：
+# 方式 A：在 Cloudflare 控制台「Workers → 你的 Worker → Triggers → Custom Domains」添加 api.你的域名.com
+# 方式 B：用 route 绑定（需该域名 NS 在 Cloudflare）
+# routes = [
+#   { pattern = "api.你的域名.com/qdii-data", zone_name = "你的域名.com" }
+# ]
+
+# account_id 在 Cloudflare 控制台右侧「API Tokens / Account ID」获取后填下：
+# account_id = "你的_CLOUDFLARE_ACCOUNT_ID"

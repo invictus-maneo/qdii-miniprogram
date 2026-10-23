@@ -1,0 +1,3 @@
+# 本地部署云函数时产生的依赖与缓存，勿入库
+node_modules/
+.wrangler/
