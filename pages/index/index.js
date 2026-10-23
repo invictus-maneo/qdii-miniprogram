@@ -39,6 +39,14 @@ Page({
   },
 
   fetchData() {
+    if (app.globalData.useCloud) {
+      this.fetchViaCloud();
+    } else {
+      this.fetchViaRequest();
+    }
+  },
+
+  fetchViaRequest() {
     const url = app.globalData.dataUrl;
     wx.request({
       url, method: "GET",
@@ -59,6 +67,30 @@ Page({
         }
       }
     });
+  },
+
+  fetchViaCloud() {
+    if (typeof wx === "undefined" || !wx.cloud || !wx.cloud.callFunction) {
+      if (!Object.keys(this._products).length) {
+        this.setData({ loading: false, error: "未检测到云开发：请在开发者工具开通云开发，并在 config.js 填入 CLOUD_ENV。" });
+      }
+      return;
+    }
+    wx.cloud.callFunction({ name: "getQdiiData" })
+      .then((res) => {
+        const r = (res && res.result) || {};
+        if (r.ok && r.data && r.data.products) {
+          this.applyData(r.data);
+          this.setData({ loading: false, error: "" });
+        } else if (!Object.keys(this._products).length) {
+          this.setData({ loading: false, error: "云函数返回异常：" + (r.err || "未知错误") });
+        }
+      })
+      .catch((err) => {
+        if (!Object.keys(this._products).length) {
+          this.setData({ loading: false, error: "云函数调用失败：" + ((err && err.message) || err) + "（请确认已开通云开发并部署 getQdiiData 云函数）" });
+        }
+      });
   },
 
   applyData(d) {

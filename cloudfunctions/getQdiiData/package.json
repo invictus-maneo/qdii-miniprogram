@@ -1,0 +1,9 @@
+{
+  "name": "getQdiiData",
+  "version": "1.0.0",
+  "description": "QDII 数据代理云函数（微信云开发，免备案域名）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
